@@ -10,9 +10,13 @@ knitr::opts_chunk$set(echo = TRUE)
 
 library(tidyverse)
 library(tidycensus)
+library(scales)
 options(scipen=999)
 
-income <- get_acs(geography = "county", variables = 'B19013_001', year = 2018)
+income <- get_acs(geography = "county", 
+                  variables = 'B19013_001', 
+                  year = 2018, 
+                  geometry = TRUE)
 
 ```
 
@@ -87,11 +91,36 @@ The upper bound for median income in Etowah County, Alabama (geoid = “01055”
 
 ## Question 2: Mapping
 
+```{r question-2, echo=FALSE}
+
+cali_by_county <- income %>% 
+  separate(col = NAME, into = c("county_name", "state"), sep = ", ") %>% 
+  filter(state == "California")
+
+cali_by_county %>%
+  ggplot(aes(fill = estimate)) +
+  geom_sf() + 
+  scale_fill_viridis_c(option = "plasma",
+                       direction = -1,
+                       labels = comma) +
+  labs(title = "Median Income by County in California",
+       caption = "Source: American Communities Survey 2018",
+       fill = "Median Income") +
+  theme_void()
+
+
+```
+
+
 ## Question 3: Publishing to Rpubs
 
-[Insert link here]
+##### View my published plot at https://rpubs.com/wkcook/580806
 
 ## Question 4: Tufte Reading
+
+[Write a paragraph here]
+
+Write a short paragraph (max 250 words – parsimony is a virtue!) critiquing the california_tax Powerpoint included in this directory, using the Tufte reading as your guide. Be sure to provide thoughts on the numeric content of the visuals, the role of logos, and the bullet structure of the information. Give at least one suggestion of how some information in the Powerpoint could be better transmitted in an 8 x 11 handout.
 
 ## Question 5: Writing a Function
 
