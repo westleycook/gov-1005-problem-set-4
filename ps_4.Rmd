@@ -7,5 +7,103 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(tidycensus)
+options(scipen=999)
+
+income <- get_acs(geography = "county", variables = 'B19013_001', year = 2018)
+
 ```
+
+## Question 1: Mad Libs
+
+```{r mad-lib-1, echo=FALSE}
+
+# This function should take a numeric vector (like our column, estimate) and 
+# calculate the standard deviation of the variable, then adds 1.
+
+# Debugging: took the + 1 out of parenthesis, added closing parenthesis after
+# return(x)
+
+sd_plus_one <- function(var, na.rm = TRUE){
+  x<- sd(var, na.rm = na.rm) + 1
+  return(x)
+  }
+
+answer_1 <- sd_plus_one(var = income$estimate) %>% 
+  round(digits = 2)
+
+```
+
+##### **ML1)** 
+
+The standard deviation of median income, plus one, is **`r answer_1`**.
+
+```{r mad-lib-2, echo=FALSE}
+
+# This function should take a county and state pair and extracts just the state
+# name. We can do this easily because the state name is always after a comma and
+# space.
+
+# Debugging: added pipe operator after countystate
+
+ get_state <- function(countystate){
+  countystate %>% 
+  str_split_fixed(.,", ", 2) %>% 
+  pluck(2) %>% 
+  return()
+ }
+
+answer_2 <- get_state("Treasure County, Montana")
+
+```
+
+##### **ML 2)** 
+
+Treasure County, Montana is located in the state of **`r answer_2`**.
+
+```{r mad-lib-3, echo=FALSE}
+
+# This function should take the geoid for a given county, grabs the median income for the 
+# corresponding county, and then add the margin of error to the value. 
+
+# Debugging: changed function parameter from x to geoid
+
+upper_bound <- function(geoid){
+ income %>% 
+ filter(GEOID == geoid) %>% 
+ mutate(estimate + moe) %>% 
+ pull()
+}
+
+answer_3 <- upper_bound(geoid = "01005")
+
+```
+
+##### **ML 3)**
+
+The upper bound for median income in Etowah County, Alabama (geoid = “01055”) is **`r answer_3`**.
+
+## Question 2: Mapping
+
+## Question 3: Publishing to Rpubs
+
+[Insert link here]
+
+## Question 4: Tufte Reading
+
+## Question 5: Writing a Function
+
+### 5a
+
+### 5b
+
+### 5c
+
+### 5d
+
+### 5e
+
+### 5f
 
