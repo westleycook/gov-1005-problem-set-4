@@ -12,6 +12,8 @@ library(tidyverse)
 library(tidycensus)
 library(scales)
 options(scipen=999)
+library(gt)
+library(magrittr)
 
 income <- get_acs(geography = "county", 
                   variables = 'B19013_001', 
@@ -91,7 +93,7 @@ The upper bound for median income in Etowah County, Alabama (geoid = “01055”
 
 ## Question 2: Mapping
 
-```{r question-2, echo=FALSE}
+```{r question_2, echo=FALSE}
 
 cali_by_county <- income %>% 
   separate(col = NAME, into = c("county_name", "state"), sep = ", ") %>% 
@@ -126,13 +128,79 @@ Write a short paragraph (max 250 words – parsimony is a virtue!) critiquing th
 
 ### 5a
 
+```{r question_5a, echo=FALSE}
+
+get_letters <- function(n) {
+  stopifnot(is.numeric(n))
+  sample(letters, size = n, replace = TRUE) %>% 
+    min()
+}
+
+# IS THERE A BETTER WAY TO SHOW THIS IN THE HTML FILE?
+
+get_letters(3)
+
+```
+
+
+In our example, we’re going to imagine that instead of using a numeric die, we’re using an alphabet die, which has every letter of the alphabet on it. Write a function called get_dice that rolls an alphabetical die n times and takes the earliest letter in the alphabet. Hint: typing the command letters will print all the letters in the english language for you. R also recognizes alphabetical order, so you can call min and max on characters. Print a call to your function with n = 3.
+
 ### 5b
+
+```{r question_5b, echo=FALSE}
+
+roll_alpha_dice <- function(n) {
+  stopifnot(is.numeric(n))
+  map_chr(rep(3, n), get_letters)
+}
+
+```
+
+Now write a new function, roll_alpha_dice, using map_chr. This function should call your get_letters function n times. You can imagine that your “n” is the number of people throwing for a certain number of letters. Write the function so that it calls groups of 3 letters. You don’t need to print anything.
 
 ### 5c
 
+```{r question_5c, echo=FALSE}
+
+tf_game <- tibble(throws = map(rep(3, 100), ~ roll_alpha_dice(4)))
+
+tf_game %>% 
+  slice(1:5) %>% 
+  gt() %>% 
+  tab_header(title = "Throws of the Alpha Dice",
+             subtitle = "Four players taking the alphabetically earliest of 
+             three rolls") %>% 
+  cols_label(throws = "Throws") %>% 
+  tab_footnote(footnote = "First five of 100 rows are shown",
+               locations = cells_title("title"))
+
+tf_game %<>% 
+  mutate(vowel = map_lgl(throws, 
+                         ~ ifelse(.[[1]] %in% c("a", "e", "i", "o", "u"), 
+                                  TRUE,
+                                  FALSE))) %>% 
+  filter(vowel == TRUE) %>% 
+  count() %>% 
+  pull(n)
+
+```
+
+I had **`r tf_game`** vowels.
+
+Imagine that the Tf’s (Alyssa, Kaneesha, Mitchell and June) are playing a game where they each roll for three letters. Make a tibble that stores the results of them playing this game 100 times. Make a gt table showing the first 5 rows.
+
+Each row of your gtable should have four letters. Let’s imagine that the first letter in each row is the letter that Alyssa rolled. Using the same scenario of 100 rolls and 4 tfs rolling 3 dice, use a map_lgl command to create a column “vowel”, which tests whether the first letter of each row is a vowel (a,e,i,o,u). Report how many times the letter selected was a vowel.
+
+For example, we had 28 vowels.
+
 ### 5d
+
+How surprised would you be if for all four tf’s the earliest alphabetical letter they rolled was a vowel? Using a tibble that shows the four tf’s playing the game 10,000 times, calculate the probability that they all roll a vowel.
 
 ### 5e
 
+Using your functions, make a simple plot mapping the distribution of “first” letters in 1000 rolls of 3 dice. For this example, you can use a single “tf” (n = 1) when you call roll_alpha_dice. Hint: You might want to check out what unnest does.
+
 ### 5f
 
+Finally, make a plot comparing 5E (selecting the earliest alphabetical letter from 3 dice) with an exercise where the first letter is selected from 5 dice. How does the distribution shift?
