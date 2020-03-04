@@ -121,9 +121,9 @@ cali_by_county %>%
 
 ## Question 4: Tufte Reading
 
-[Write a paragraph here]
+The California Tax PowerPoint seems to be a gross oversimplification of a very complex issue, and Tufte would have a heyday critiquing it. As he suggests is common, the bullet structure of the information in this PPT leads to simple statements that tell the reader very little (e.g. “The State Has a Sound Tax System,” slide 19). He would be disgusted with the visuals, since they have very few numbers and seem to be in the PPT for show (ooh, look, a chart!) rather than for substance; particularly bad is the pie chart on slide 14, which doesn’t have any numbers at all! What’s more, the logo in the bottom right corner of each slide takes up valuable space, making the PPT look like an advertisement for LAO more than an instructional or information-sharing tool.
 
-Write a short paragraph (max 250 words – parsimony is a virtue!) critiquing the california_tax Powerpoint included in this directory, using the Tufte reading as your guide. Be sure to provide thoughts on the numeric content of the visuals, the role of logos, and the bullet structure of the information. Give at least one suggestion of how some information in the Powerpoint could be better transmitted in an 8 x 11 handout.
+Perhaps the best way to improve the PPT, as Tufte suggests, would be to get rid of it entirely in favor of an 8 x 11 paper handout. Such a handout could, for example, have a list of tax acronyms (PIT, SUT, CT, etc.) used throughout the presentation so attendees could refresh their memories each time one was mentioned; this would make it less likely they would forget the acronyms immediately after their initial introduction (which I did, when reading the PPT slides). It could also hold a more complete table showing the effects of change in personal income on change in revenues (slide 9) and an easier-to-read version of the tax expenditure chart on slide 18.
 
 ## Question 5: Writing a Function
 
