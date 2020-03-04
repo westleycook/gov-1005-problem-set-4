@@ -14,6 +14,7 @@ library(scales)
 options(scipen=999)
 library(gt)
 library(magrittr)
+library(gridExtra)
 
 income <- get_acs(geography = "county", 
                   variables = 'B19013_001', 
@@ -136,14 +137,10 @@ get_letters <- function(n) {
     min()
 }
 
-# IS THERE A BETTER WAY TO SHOW THIS IN THE HTML FILE?
-
-get_letters(3)
-
 ```
 
-
-In our example, we’re going to imagine that instead of using a numeric die, we’re using an alphabet die, which has every letter of the alphabet on it. Write a function called get_dice that rolls an alphabetical die n times and takes the earliest letter in the alphabet. Hint: typing the command letters will print all the letters in the english language for you. R also recognizes alphabetical order, so you can call min and max on characters. Print a call to your function with n = 3.
+A call of my function get_letters with n = 3 produces the output 
+"**`r get_letters(3)`**".
 
 ### 5b
 
@@ -156,7 +153,7 @@ roll_alpha_dice <- function(n) {
 
 ```
 
-Now write a new function, roll_alpha_dice, using map_chr. This function should call your get_letters function n times. You can imagine that your “n” is the number of people throwing for a certain number of letters. Write the function so that it calls groups of 3 letters. You don’t need to print anything.
+I wrote a cool function called roll_alpha_dice. Check it out in 5c.
 
 ### 5c
 
@@ -187,20 +184,76 @@ tf_game %<>%
 
 I had **`r tf_game`** vowels.
 
-Imagine that the Tf’s (Alyssa, Kaneesha, Mitchell and June) are playing a game where they each roll for three letters. Make a tibble that stores the results of them playing this game 100 times. Make a gt table showing the first 5 rows.
-
-Each row of your gtable should have four letters. Let’s imagine that the first letter in each row is the letter that Alyssa rolled. Using the same scenario of 100 rolls and 4 tfs rolling 3 dice, use a map_lgl command to create a column “vowel”, which tests whether the first letter of each row is a vowel (a,e,i,o,u). Report how many times the letter selected was a vowel.
-
-For example, we had 28 vowels.
-
 ### 5d
 
-How surprised would you be if for all four tf’s the earliest alphabetical letter they rolled was a vowel? Using a tibble that shows the four tf’s playing the game 10,000 times, calculate the probability that they all roll a vowel.
+```{r question_5d, echo=FALSE}
+
+surprised <- tibble(throws = map(rep(3, 10000), ~ roll_alpha_dice(4))) %>% 
+  mutate(all_vowels = map_lgl(throws, 
+                              ~ ifelse(all(. %in% c("a", "e", "i", "o", "u")), 
+                                  TRUE,
+                                  FALSE)))
+
+prob_all_vowels <- surprised %>% 
+  pull(all_vowels) %>% 
+  mean()
+
+
+```
+
+The probability that all four TF's roll a vowel is approximately 
+**`r prob_all_vowels`**.
 
 ### 5e
 
-Using your functions, make a simple plot mapping the distribution of “first” letters in 1000 rolls of 3 dice. For this example, you can use a single “tf” (n = 1) when you call roll_alpha_dice. Hint: You might want to check out what unnest does.
+```{r question_5e, echo=FALSE}
+
+first_letters <- tibble(throws = map(rep(3, 1000), ~ roll_alpha_dice(1))) %>% 
+  unnest(throws)
+
+first_letters %>% 
+  ggplot(aes(throws)) +
+  geom_bar() +
+  theme_classic() +
+  labs(title = 'Distribution of "First" Letters in 1,000 Rolls of 3 Dice',
+       x = "Letter Rolled",
+       y = "Count")
+
+```
 
 ### 5f
 
-Finally, make a plot comparing 5E (selecting the earliest alphabetical letter from 3 dice) with an exercise where the first letter is selected from 5 dice. How does the distribution shift?
+```{r question_5f, echo=FALSE}
+
+roll_alpha_dice_5 <- function(n) {
+  stopifnot(is.numeric(n))
+  map_chr(rep(5, n), get_letters)
+}
+
+first_letters_5dice <- tibble(throws = map(rep(5, 1000),
+                                           ~ roll_alpha_dice_5(1))) %>% 
+  unnest(throws)
+
+plot_3_dice <- first_letters %>% 
+  ggplot(aes(throws)) +
+  geom_bar() +
+  theme_classic() +
+  labs(title = 'Distribution of "First" Letters, 3 Dice',
+       x = "Letter Rolled",
+       y = "Count") +
+  scale_y_continuous(limits = c(0, 200))
+
+plot_5_dice <- first_letters_5dice %>% 
+  ggplot(aes(throws)) +
+  geom_bar() +
+  theme_classic() +
+  labs(title = 'Distribution of "First" Letters, 5 Dice',
+       x = "Letter Rolled",
+       y = "Count") +
+  scale_y_continuous(limits = c(0, 200))
+
+gridExtra::grid.arrange(plot_3_dice, plot_5_dice, ncol = 2)
+
+```
+
+When using five dice instead of three, the distribution compresses toward the left: the counts of the earlier letters (a, b, c, etc.) increase relative to their counts when only three dice are used, and the counts of later letters (z, y, x, etc.) decrease - to the point that fewer unique letters are rolled at all when 5 dice are used.
