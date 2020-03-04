@@ -84,13 +84,16 @@ upper_bound <- function(geoid){
  pull()
 }
 
+# income %>% 
+#   filter(GEOID == "01005")
+
 answer_3 <- upper_bound(geoid = "01005")
 
 ```
 
 ##### **ML 3)**
 
-The upper bound for median income in Etowah County, Alabama (geoid = “01055”) is **`r answer_3`**.
+The upper bound for median income in Barbour County, Alabama (geoid = “01005”) is **`r answer_3`**.
 
 ## Question 2: Mapping
 
